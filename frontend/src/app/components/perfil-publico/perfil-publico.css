@@ -1,0 +1,90 @@
+:host { display: block; width: min(100%, 640px); }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-bottom: 20px; padding: 0;
+  border: 0; background: none;
+  color: var(--text-gray); font: inherit; font-size: 14px;
+  cursor: pointer;
+}
+.back-link:hover { color: var(--orange); }
+
+.estado { color: var(--text-gray); }
+.estado.error { color: #a33b3b; }
+
+.perfil-card {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.perfil-header { display: flex; align-items: center; gap: 16px; margin-bottom: 26px; }
+.avatar { color: #858079; font-size: 72px; line-height: 1; }
+.perfil-header h1 { margin: 0; font-size: 22px; font-weight: 700; }
+.rol {
+  display: inline-block; margin-top: 6px; padding: 3px 10px;
+  border-radius: 999px;
+  background: #fdf0e8; color: var(--orange);
+  font-size: 12px; font-weight: 600;
+}
+
+.datos {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
+  margin: 0;
+}
+.datos dt { color: #5f5b56; font-size: 12px; font-weight: 700; }
+.datos dd { margin: 4px 0 0; font-size: 14px; }
+
+.descripcion { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--border); }
+.descripcion h2 { margin: 0 0 8px; font-size: 15px; font-weight: 700; }
+.descripcion p { margin: 0; color: #4a4642; font-size: 14px; line-height: 1.55; white-space: pre-line; }
+
+@media (max-width: 560px) {
+  .perfil-card { padding: 20px; }
+  .datos { grid-template-columns: 1fr; }
+}
+.dato-ancho { grid-column: 1 / -1; }
+
+.reporte { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--border); }
+.btn-reportar {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border: 1px solid #e6c9c9; border-radius: 7px;
+  background: #fff; color: #a33b3b; font: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer;
+}
+.btn-reportar:hover { background: #fff5f5; }
+.reporte-bloqueado { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--text-gray); font-size: 13px; }
+.reporte-form { display: grid; gap: 10px; }
+.reporte-form label { font-size: 14px; font-weight: 700; }
+.reporte-form textarea {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid #e3dfda; border-radius: 7px;
+  font: inherit; font-size: 14px; resize: vertical;
+}
+.reporte-form textarea:focus { border-color: var(--green-dark); outline: 3px solid rgba(45,90,74,.12); }
+.reporte-aviso { margin: 0; color: var(--text-gray); font-size: 12px; }
+.reporte-acciones { display: flex; justify-content: flex-end; gap: 10px; }
+.btn-cancelar, .btn-enviar {
+  padding: 8px 16px; border-radius: 7px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.btn-cancelar { border: 1px solid var(--border); background: #fff; color: var(--text-dark); }
+.btn-enviar { border: 0; background: #a33b3b; color: #fff; }
+.btn-enviar:disabled, .btn-cancelar:disabled { cursor: not-allowed; opacity: .55; }
+.reporte-form select {
+  width: 100%; padding: 9px 11px;
+  border: 1px solid #e3dfda; border-radius: 7px;
+  font: inherit; font-size: 14px; background: #fff;
+}
+
+.btn-bloquear {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
+  background: #fff; color: #4a4642; font-size: 12px; font-weight: 600;
+}
+.btn-bloquear:hover { background: #f7f5f2; }
+.btn-bloquear:disabled { cursor: not-allowed; opacity: .55; }
+.perfil-header .btn-bloquear { margin-left: auto; align-self: flex-start; }
+.aviso-bloqueo {
+  display: flex; align-items: center; gap: 6px;
+  margin: -12px 0 20px; color: #a33b3b; font-size: 13px;
+}

@@ -1,0 +1,90 @@
+@if (usuario) {
+<header class="topbar">
+  <a routerLink="/" class="brand">
+    <span class="brand-icon">🐾</span>
+    <span class="brand-name">AdoptMe</span>
+  </a>
+
+  <div class="topbar-right">
+  @if (usuario) {
+  @if (solicitudesPendientes > 0) {
+  <a routerLink="/solicitudes" class="notif-icon" aria-label="Ver solicitudes pendientes">
+    <i class="bi bi-bell"></i>
+    <span class="notif-count">{{ solicitudesPendientes }}</span>
+  </a>
+  }
+  <a [routerLink]="esModerador ? '/moderacion' : '/perfil'" class="user-chip"
+     [title]="esModerador ? 'Ir al panel de moderación' : 'Ir a mi perfil'">
+    @if (fotoPerfil) {
+      <img [src]="fotoPerfil" [alt]="'Foto de ' + usuario.nombre_completo">
+    } @else {
+      <i class="bi bi-person-circle user-avatar-placeholder" role="img" aria-label="Sin foto de perfil"></i>
+    }
+    <span>{{ usuario.nombre_completo }}</span>
+  </a>
+  }
+  </div>
+</header>
+
+<aside class="sidebar">
+  <nav class="sidebar-nav">
+    @if (esModerador) {
+    <a routerLink="/moderacion" routerLinkActive="active" class="nav-item">
+      <i class="bi bi-shield-check"></i><span>Moderación</span>
+    </a>
+    } @else {
+    <a routerLink="/publicaciones" routerLinkActive="active" class="nav-item">
+      <i class="bi bi-house"></i><span>Inicio</span>
+    </a>
+    @if (esRescatista) {
+      <a routerLink="/publicar" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-plus-circle-fill"></i><span>Añadir Publicación</span>
+      </a>
+    }
+    <a routerLink="/chats" routerLinkActive="active" class="nav-item">
+      <i class="bi bi-chat"></i><span>Mensajería</span>
+    </a>
+    <a routerLink="/solicitudes" routerLinkActive="active" class="nav-item">
+      <i class="bi bi-file-earmark-text"></i><span>Solicitudes</span>
+    </a>
+    <a routerLink="/perfil" routerLinkActive="active" class="nav-item">
+      <i class="bi bi-person"></i><span>Mi Perfil</span>
+    </a>
+    }
+  </nav>
+
+  <div class="sidebar-bottom">
+    @if (solicitudesPendientes > 0) {
+    <div class="notif-card">
+      <div class="notif-card-title">
+        <i class="bi bi-bell-fill"></i> Nueva solicitud
+      </div>
+      <p>Tienes {{ solicitudesPendientes }} solicitud{{ solicitudesPendientes === 1 ? '' : 'es' }} de adopción pendiente{{ solicitudesPendientes === 1 ? '' : 's' }} por revisar.</p>
+    </div>
+    }
+    @if (usuario) {
+    <a class="nav-item logout" (click)="cerrarSesion()">
+      <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+    </a>
+    }
+  </div>
+</aside>
+}
+
+<main [class.main-content]="usuario" [class.guest-content]="!usuario">
+  <router-outlet></router-outlet>
+</main>
+
+@if (alertaActual; as alerta) {
+<div class="alerta-overlay">
+  <div class="alerta-modal" role="alertdialog" aria-labelledby="alerta-titulo" aria-describedby="alerta-mensaje">
+    <i class="bi alerta-icono" aria-hidden="true"
+       [class.bi-exclamation-triangle-fill]="alerta.tipo !== 'SUSPENSION'"
+       [class.bi-slash-circle-fill]="alerta.tipo === 'SUSPENSION'"></i>
+    <h2 id="alerta-titulo">{{ tituloAlerta }}</h2>
+    <p id="alerta-mensaje">{{ alerta.mensaje }}</p>
+    <span class="alerta-fecha">{{ alerta.fecha_alerta | date:'dd/MM/yyyy HH:mm' }}</span>
+    <button type="button" (click)="cerrarAlerta()">Entendido</button>
+  </div>
+</div>
+}
