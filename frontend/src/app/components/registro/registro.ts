@@ -4,7 +4,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { AuthService } from '../../services/auth';
 import { UsuarioService } from '../../services/usuario';
 import { SelectorUbicacion, UbicacionService } from '../../services/ubicacion';
 import { PROVINCIAS_ARGENTINAS } from '../../data/provincias';
@@ -44,7 +43,6 @@ export class Registro implements OnInit {
     private http: HttpClient,
     private usuarios: UsuarioService,
     private ubicaciones: UbicacionService,
-    private auth: AuthService,
     private router: Router,
     private toastr: ToastrService,
     private changeDetector: ChangeDetectorRef
@@ -169,18 +167,12 @@ export class Registro implements OnInit {
           return;
         }
         this.guardarFotoPerfil(userId);
-        this.auth.login(this.email.trim(), this.password).subscribe({
-          next: () => {
-            this.toastr.success('Cuenta creada. ¡Bienvenido/a!');
-            this.router.navigate(['/publicar']);
-          },
-          error: error => {
-            console.error('La cuenta se creó, pero no se pudo iniciar la sesión automáticamente.', error);
-            this.registrando = false;
-            this.toastr.success('Cuenta creada. Iniciá sesión con tu correo y contraseña.');
-            this.router.navigate(['/login']);
-          }
-        });
+        // No iniciamos sesion: primero tiene que verificar el email con el link del mail.
+        this.toastr.success('Cuenta creada. Revisá tu correo para verificarla.');
+        if (response?.mail_enviado === false) {
+          this.toastr.warning('No pudimos enviar el mail de verificación. Pedí que te lo reenviemos desde el inicio de sesión.');
+        }
+        this.router.navigate(['/login'], { queryParams: { verificar: this.email.trim() } });
       },
       error: error => {
         console.error('No se pudo crear la cuenta.', error);

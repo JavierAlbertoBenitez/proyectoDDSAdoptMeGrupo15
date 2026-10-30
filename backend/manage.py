@@ -17,6 +17,9 @@ def main():
             "No se encontró Django. ¿Activaste el entorno virtual y corriste "
             "'pip install -r requirements.txt'?"
         ) from exc
+    # Con runserver levanta solo el servidor de mails (ver adopciones/mails_locales.py).
+    from adopciones.mails_locales import preparar_mails
+    preparar_mails()
     execute_from_command_line(sys.argv)
 
 

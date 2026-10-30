@@ -173,6 +173,9 @@ class Usuarios(models.Model):
     # el usuario la cambia desde Mi Perfil.
     direccion_publica = models.BooleanField(default=False)
     estado = models.CharField(max_length=20, choices=ESTADOS, default=ACTIVO)
+    # Se pone en True cuando el usuario abre el link del mail de verificacion
+    # (RF02). Hasta entonces no puede iniciar sesion. Ver verificacion.py.
+    email_verificado = models.BooleanField(default=False)
     # Suspension temporal que pone un moderador al aceptar un reporte.
     # Mientras la fecha no pase, el usuario no puede iniciar sesion ni usar la API.
     suspendido_hasta = models.DateTimeField(blank=True, null=True)

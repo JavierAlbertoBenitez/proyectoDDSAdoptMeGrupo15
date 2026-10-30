@@ -19,6 +19,8 @@ from .views import (
     LocalidadesView,
     UsuariosView,
     LoginView,
+    VerificarEmailView,
+    ReenviarVerificacionView,
     CambiarPasswordView,
     DarDeBajaUsuarioView,
     PerfilPublicoView,
@@ -64,6 +66,9 @@ urlpatterns = [
     path('api/usuarios/<int:id>/cambiar-password/', CambiarPasswordView.as_view()),
     path('api/usuarios/<int:id>/sancion/<str:accion>/', GestionarSancionView.as_view()),
     path('api/login/', LoginView.as_view()),
+    # Verificacion de email: el link del mail y el boton de reenviarlo
+    path('api/verificar-email/', VerificarEmailView.as_view()),
+    path('api/reenviar-verificacion/', ReenviarVerificacionView.as_view()),
 
     # Animales y sus fotos
     path('api/animales/', AnimalesView.as_view()),

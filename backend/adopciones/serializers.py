@@ -282,12 +282,14 @@ class UsuariosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuarios
         fields = ('id_usuario', 'email', 'nombre_completo', 'telefono', 'descripcion',
-                  'direccion_publica', 'estado', 'suspendido_hasta', 'strikes_reporte',
+                  'direccion_publica', 'estado', 'email_verificado', 'suspendido_hasta', 'strikes_reporte',
                   'reportes_bloqueados_hasta', 'puede_reportar', 'ubicacion', 'tipo_usuario',
                   'ubicacion_id', 'tipo_usuario_id', 'provincia', 'departamento', 'ciudad',
                   'zona_aproximada', 'calle', 'numero', 'piso', 'password')
         # El estado (ACTIVO/BAJA), la suspension y los strikes solo los cambia un moderador.
-        read_only_fields = ('estado', 'suspendido_hasta', 'strikes_reporte', 'reportes_bloqueados_hasta')
+        # email_verificado solo cambia con el link del mail (VerificarEmailView).
+        read_only_fields = ('estado', 'email_verificado', 'suspendido_hasta', 'strikes_reporte',
+                            'reportes_bloqueados_hasta')
 
     def validate(self, attrs):
         # Calle, numero y piso: si cambia alguno desde el perfil, se valida y se rearma

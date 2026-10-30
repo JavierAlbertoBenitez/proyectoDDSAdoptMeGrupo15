@@ -29,6 +29,15 @@ export class AuthService {
     );
   }
 
+  /** El token viene en el link del mail de verificación. */
+  verificarEmail(token: string): Observable<any> {
+    return this.http.post<any>('/api/verificar-email/', { token });
+  }
+
+  reenviarVerificacion(email: string): Observable<any> {
+    return this.http.post<any>('/api/reenviar-verificacion/', { email });
+  }
+
   logout(): void {
     this.usuarioSubject.next(null);
     localStorage.removeItem('usuario');

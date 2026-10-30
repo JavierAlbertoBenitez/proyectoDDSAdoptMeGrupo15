@@ -1,0 +1,21 @@
+<section class="auth-page">
+  <div class="auth-card">
+    <a routerLink="/login" class="auth-brand">🐾 AdoptMe</a>
+    <p class="auth-eyebrow">VERIFICACIÓN DE EMAIL</p>
+
+    @if (estado === 'verificando') {
+      <h1>Verificando...</h1>
+      <p class="auth-description">
+        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Estamos confirmando tu email.
+      </p>
+    } @else if (estado === 'ok') {
+      <h1>¡Listo!</h1>
+      <div class="auth-info" role="status">{{ mensaje }}</div>
+      <a class="auth-submit auth-link-boton" routerLink="/login">Iniciar sesión</a>
+    } @else {
+      <h1>No se pudo verificar</h1>
+      <div class="auth-error" role="alert">{{ mensaje }}</div>
+      <p class="auth-switch">Desde el <a routerLink="/login">inicio de sesión</a> podés pedir que te enviemos un nuevo mail.</p>
+    }
+  </div>
+</section>

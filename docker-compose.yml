@@ -21,12 +21,21 @@ services:
       interval: 5s
       retries: 30
 
+  # Servidor de mail falso: atrapa los mails que manda Django (verificacion de
+  # email) y los muestra en http://localhost:8025. No llegan a nadie real.
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - "8025:8025"   # bandeja de entrada web
+      - "1025:1025"   # SMTP (lo usa el backend)
+
   backend:
     build: ./backend
     restart: on-failure
     environment:
       DB_HOST: db
       DB_PASSWORD: root
+      EMAIL_HOST: mailpit
       PYTHONUNBUFFERED: 1
     ports:
       - "8000:8000"
@@ -36,6 +45,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     command: >
       sh -c "python manage.py migrate &&
              python manage.py loaddata datos_iniciales &&
