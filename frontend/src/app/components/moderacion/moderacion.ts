@@ -208,10 +208,11 @@ export class Moderacion implements OnInit {
       return;
     }
     this.eliminandoPublicaciones.add(id);
-    // El backend deja borrar a un moderador aunque no sea el dueño (lo saca del token).
-    this.publicacionService.delete(id, usuario.id_usuario).subscribe({
+    // El backend deja borrar a un moderador aunque no sea el dueño (lo saca del token)
+    // y le avisa solo al rescatista.
+    this.publicacionService.deleteComoModerador(id, reporte.id_reporte).subscribe({
       next: () => {
-        this.toastr.success('Publicación eliminada.');
+        this.toastr.success('Publicación eliminada. Se le avisó al rescatista.');
         this.eliminandoPublicaciones.delete(id);
         // Otros reportes pueden apuntar a la misma publicación.
         for (const r of this.reportes) {

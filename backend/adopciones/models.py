@@ -572,16 +572,19 @@ class Reportes(models.Model):
 # ---------------------------------------------------------------------------
 # tabla alertas
 # Avisos que un moderador le manda a un usuario: advertencias de comportamiento,
-# suspensiones y strikes. El usuario las ve al entrar y las marca como leidas.
+# suspensiones, strikes y publicaciones que le borro un moderador. El usuario
+# las ve al entrar y las marca como leidas.
 # ---------------------------------------------------------------------------
 class Alertas(models.Model):
     ADVERTENCIA = 'ADVERTENCIA'
     SUSPENSION = 'SUSPENSION'
     STRIKE = 'STRIKE'
+    PUBLICACION_BORRADA = 'PUBLICACION_BORRADA'
     TIPOS = [
         (ADVERTENCIA, 'Advertencia de comportamiento'),
         (SUSPENSION, 'Suspensión'),
         (STRIKE, 'Strike por reporte sin motivo'),
+        (PUBLICACION_BORRADA, 'Publicación eliminada por un moderador'),
     ]
 
     id_alerta = models.AutoField(primary_key=True)

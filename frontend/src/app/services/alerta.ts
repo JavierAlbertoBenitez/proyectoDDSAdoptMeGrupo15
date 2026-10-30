@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface Alerta {
   id_alerta: number;
-  tipo: 'ADVERTENCIA' | 'SUSPENSION' | 'STRIKE';
+  tipo: 'ADVERTENCIA' | 'SUSPENSION' | 'STRIKE' | 'PUBLICACION_BORRADA';
   mensaje: string;
   fecha_alerta: string;
   leida: boolean;

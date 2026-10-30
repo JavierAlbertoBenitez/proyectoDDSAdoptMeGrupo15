@@ -57,4 +57,10 @@ export class PublicacionService {
     const params = new HttpParams().set('id_rescatista', idRescatista);
     return this.http.delete<any>(`${this.baseUrl}/${id}/`, { params });
   }
+
+  /** La borra un moderador: el backend le manda una alerta al rescatista automaticamente. */
+  deleteComoModerador(id: number, idReporte: number): Observable<any> {
+    const params = new HttpParams().set('id_reporte', idReporte);
+    return this.http.delete<any>(`${this.baseUrl}/${id}/`, { params });
+  }
 }

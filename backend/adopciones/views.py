@@ -831,7 +831,22 @@ class PublicacionesView(APIView):
             return Response({'status': 'error', 'data': 'Solo el rescatista propietario puede eliminar esta publicación'},
                             status=status.HTTP_403_FORBIDDEN)
 
+        # Si la borra un moderador le avisamos al rescatista con una alerta.
+        # Se arma antes de borrar porque despues ya no tenemos el nombre del animal.
+        alerta = None
+        if resultado.rescatista_id != request.user.id_usuario:
+            texto = ('Un moderador eliminó tu publicación de ' + resultado.animal.nombre
+                     + ' por incumplir las normas de la plataforma.')
+            # El reporte por el que se borro (si el front lo manda y es de esta publicacion).
+            reporte = Reportes.objects.filter(
+                id_reporte=request.query_params.get('id_reporte') or 0, publicacion=resultado
+            ).first()
+            alerta = Alertas(usuario_id=resultado.rescatista_id, reporte=reporte,
+                             tipo=Alertas.PUBLICACION_BORRADA, mensaje=texto)
+
         resultado.delete()
+        if alerta is not None:
+            alerta.save()
         return Response({'status': 'success', 'data': 'Publicación eliminada'})
 
 
