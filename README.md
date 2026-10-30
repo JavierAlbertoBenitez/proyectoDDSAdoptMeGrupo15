@@ -3,6 +3,8 @@
 - [Documentación](./documentacion) 
 - [Backend](./backend/)
 - [Frontend](./frontend/)
+- [Como usar el sistema](#como-usar-el-sistema)
+- [Como levantar el proyecto](#como-levantar-el-proyecto)
 
 
 ## COMO USAR EL SISTEMA
@@ -16,38 +18,34 @@ Los links para acceder son:
 
 - FRONT: http://localhost:4200
 - BACK: http://localhost:8000
+- MAILS (Mailpit): http://localhost:8025
 
+El de mails se utiliza para cubrir el requisito funcional RF02 de los emails deben ser verificados
 
+Existen 3 tipos de usuarios (rescatista, adoptante y moderador) y el sistema cuenta con un usuario para cada tipo cuyo datos son los siguientes. 
 
-El sistema cuenta con 3 tipos de usuarios
+* Adoptante: adoptante1@mail.com / clave 123456
+* Rescatista: rescatista1@mail.com / clave 123456
+* Moderador: mod1@adoptme.com / clave 123456
 
-- Rescatista:
+Se pueden registrar más siguiendo estos pasos
 
-    Este usuario se tiene que registrar en http://localhost:4200/registro
+### Registro
 
-    y puede realizar esta acciones
+#### Rescatista y Adoptante
 
-    * Crear una publicación de un animal
-    * Aceptar o rechazar una solicitud de adopción
-    * Chatear con un posible adoptante
-    * Poner una publicación como en proceso, que sucede cuando ya hay un posible adoptante para un animal. Acá la publicación ya no le aparecerá al resto de adoptantes
-    * Poner la publicación como adoptado que es cuando se concretó una adopción
-    * Eliminar una publicación
+entrar a http://localhost:4200/registro y registrarse, el sistema le manda al usuario un mail con un link para verificar su cuenta. Hasta que no abra ese link no puede iniciar sesión (desde el login puede pedir que se lo reenviemos). El link vence a las 24 horas.
 
-- Adoptante:
+ En local los mails no llegan a ninguna casilla real llegan a  http://localhost:8025. Por eso se puede registrar cualquier mail, aunque no exista como en los casos genericos que tenemos.
 
-    Este usuario se tiene que registrar en http://localhost:4200/registro
+Es decir los pasos de registro para rescatista o adoptante son:
 
-    y puede realizar esta acciones
+1. Registrarse en http://localhost:4200/registro
+2. Abrir http://localhost:8025 (lo hace através de mailpit un servicio para hacer pruebas de verificación de correos en un entorno de pruebas), entrar al mail "Verificá tu cuenta de AdoptMe" y hacer clic en "Verificar mi email"
+3. Iniciar sesión normalmente
 
-    * Buscar una publicación acorde al animal que quiera adoptar
-    * Chatear con un rescatista que tenga una posible mascota que busque
-
-
-Ambos pueden reportar usuarios, publicaciones y bloquear usuarios
-
-- Moderador 
-    Este usuario no se puede registrar se crea a través de ejecutar el siguiente comando
+#### Moderadores
+Este usuario no se puede registrar como el resto se crea a través de ejecutar el siguiente comando
 
     ```bash
      python manage.py crear_moderador --email (unemail) --nombre (unnombre)
@@ -58,6 +56,26 @@ Ambos pueden reportar usuarios, publicaciones y bloquear usuarios
     docker compose exec backend python manage.py crear_moderador --email (unemail) --nombre (unnombre)
     ```
 
+### Que puede hacer cada usuario
+
+#### Rescatista:
+    * Crear una publicación de un animal
+    * Aceptar o rechazar una solicitud de adopción
+    * Chatear con un posible adoptante
+    * Poner una publicación como en proceso, que sucede cuando ya hay un posible adoptante para un animal. Acá la publicación ya no le aparecerá al resto de adoptantes
+    * Poner la publicación como adoptado que es cuando se concretó una adopción
+    * Eliminar una publicación
+
+#### Adoptante
+
+    * Buscar una publicación acorde al animal que quiera adoptar
+    * Chatear con un rescatista que tenga una posible mascota que busque
+
+
+Ambos pueden reportar usuarios, publicaciones y bloquear usuarios
+
+### Moderador 
+    
     el moderador entra con su usuario y contraseña a
 
     http://localhost:4200/moderacion
@@ -68,13 +86,6 @@ Ambos pueden reportar usuarios, publicaciones y bloquear usuarios
     * Advertir al usuario reportado
     * Bloquear al usuario reportado
     * Sancionar al que reporto, esto ocurre si el usuario reporta desmedidamente y genera 3 strikes a la tercera se le bloquea las herramientas de reporte por un tiempo asignado por el mod.
-
-    Ya existen 3 usuarios genericos
-
-    * Adoptante: adoptante1@mail.com clave 123456
-    * Rescatista: rescatista1@mail.com clave 123456
-    * Moderador: mod1@adoptme.com clave 123456
-
 
 ## Como levantar el proyecto
 
@@ -101,11 +112,12 @@ Los links para acceder son:
 ```
 FRONT: http://localhost:4200
 BACK: http://localhost:8000
+MAILS: http://localhost:8025 
 ```
 
-Al levantar, el backend corre solo las migraciones, que crean los 3 usuarios genericos, y carga los tipos de usuario. No hace falta ningun paso extra.
+Al levantar, el backend corre solo las migraciones, que crean los 3 usuarios genericos, y carga los tipos de usuario. No hace falta ningun paso extra. Mailpit tambien se levanta solo.
 
-Si el login no anda (por ejemplo despues de reiniciar la PC o Docker Desktop), revisar con `docker compose ps` que los 3 contenedores esten `Up`. Si `db` aparece `Exited` o `backend` aparece `Restarting`, ejecutar:
+Si el login no anda (por ejemplo despues de reiniciar la PC o Docker Desktop), revisar con `docker compose ps` que los 4 contenedores (`db`, `backend`, `frontend` y `mailpit`) esten `Up`. Si `db` aparece `Exited` o `backend` aparece `Restarting`, ejecutar:
 
 ```bash
 docker compose up -d
@@ -117,7 +129,8 @@ docker compose restart backend
 
 Para levantar el backend hacer estos pasos
 
-Si es la primera vez hacer los pasos del 1 al 7. Si no, hacer el paso 1, despues `python manage.py migrate` (por si se bajaron migraciones nuevas con git pull, por ejemplo la que crea los usuarios genericos) y el paso 7
+Si es la primera vez hacer los pasos del 1 al 7. Si no, hacer el paso 1 y del 5 al 7
+
 1) Abrir un terminal y ejecutar
 
     ```bash
@@ -180,6 +193,24 @@ Si es la primera vez hacer los pasos del 1 al 7. Si no, hacer el paso 1, despues
     python manage.py runserver
     ```
 Ya tendremos el backend corriendo en http://127.0.0.1:8000/
+
+#### Mails (verificación de email)
+
+Para que lleguen los mails de verificación hay que tener Mailpit corriendo. Hay dos formas:
+
+- **Con Mailpit (recomendado):** si se tiene Docker, levantar solo Mailpit con
+    ```bash
+    docker compose up -d mailpit
+    ```
+    o sin Docker, bajar `mailpit-windows-amd64.zip` de https://github.com/axllent/mailpit/releases, descomprimirlo y ejecutar `mailpit.exe`. Los mails se ven en http://localhost:8025
+
+- **Sin Mailpit:** antes del paso 7 ejecutar (en PowerShell)
+    ```powershell
+    $env:EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
+    ```
+    y el mail, con el link de verificación, se imprime en la consola del backend.
+
+Si no hay ninguno de los dos, el registro funciona igual pero el mail no se envía: el usuario lo puede reenviar desde el login cuando Mailpit esté levantado.
 
 ### Frontend
 
