@@ -1,3 +1,5 @@
+# FRONTEND
+
 ## INDICE
 
 - [Documentación](./documentacion) 
@@ -159,13 +161,12 @@ Si es la primera vez hacer los pasos del 1 al 7. Si no, hacer el paso 1 y del 5 
     DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'adopcionesdb',      # nombre del schema 
+        'NAME': 'adopcionesdb',
         'USER': 'root',
-        # Con Docker vienen de docker-compose.yml. Sin Docker se usa lo de la derecha.
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''), #poner la clave acá
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PASSWORD': 'tu_password_de_root',   # <-- cada uno pone la suya
+        'HOST': 'localhost',
         'PORT': '3306',
-     }
+        }
     }
     ```
     y poner nuestra constraseña en 'PASSWORD'
