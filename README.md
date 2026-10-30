@@ -174,7 +174,7 @@ Ya tendremos el backend corriendo en http://127.0.0.1:8000/
 
 ### Frontend
 
-Si es la primera vez que se levanta el frontend ejecutar todos los pasos si no el 1 y 2
+Si es la primera vez que se levanta el frontend ejecutar todos los pasos si no el 1 y 3
 
 1) Abrir un terminal y ejecutar
 
