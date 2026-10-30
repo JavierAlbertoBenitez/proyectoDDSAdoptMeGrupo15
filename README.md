@@ -133,7 +133,7 @@ Si es la primera vez hacer los pasos del 1 al 6, si hacer el paso 1 y 7
 
 4) ahora abrimos el archivo settings.py que se encuentra en ```backend/adopciones``` y buscamos  ```DATABASE``` esta parte del código
 
-    ```python
+```python
   DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -144,10 +144,10 @@ Si es la primera vez hacer los pasos del 1 al 6, si hacer el paso 1 y 7
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': '3306',
      }
-    }
-    ```
+   }
+ ```
 
-    y poner nuestra constraseña en 'PASSWORD'
+y poner nuestra constraseña en 'PASSWORD'
 
 5) Ahora ya podemos crear y migrar las tablas
 
