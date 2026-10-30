@@ -72,7 +72,7 @@ Ambos pueden reportar usuarios, publicaciones y bloquear usuarios
     Ya existen 3 usuarios genericos
 
     * Adoptante: adoptante1@mail.com clave 123456
-    * Rescatista: rescatist1@mail.com clave 123456
+    * Rescatista: rescatista1@mail.com clave 123456
     * Moderador: mod1@adoptme.com clave 123456
 
 
@@ -102,13 +102,22 @@ Los links para acceder son:
 FRONT: http://localhost:4200
 BACK: http://localhost:8000
 ```
+
+Al levantar, el backend corre solo las migraciones, que crean los 3 usuarios genericos, y carga los tipos de usuario. No hace falta ningun paso extra.
+
+Si el login no anda (por ejemplo despues de reiniciar la PC o Docker Desktop), revisar con `docker compose ps` que los 3 contenedores esten `Up`. Si `db` aparece `Exited` o `backend` aparece `Restarting`, ejecutar:
+
+```bash
+docker compose up -d
+docker compose restart backend
+```
 ### Consola
 
 #### Backend
 
 Para levantar el backend hacer estos pasos
 
-Si es la primera vez hacer los pasos del 1 al 6, si hacer el paso 1 y 7
+Si es la primera vez hacer los pasos del 1 al 7. Si no, hacer el paso 1, despues `python manage.py migrate` (por si se bajaron migraciones nuevas con git pull, por ejemplo la que crea los usuarios genericos) y el paso 7
 1) Abrir un terminal y ejecutar
 
     ```bash
@@ -148,20 +157,21 @@ Si es la primera vez hacer los pasos del 1 al 6, si hacer el paso 1 y 7
     ```
     y poner nuestra constraseña en 'PASSWORD'
 
-5) Ahora ya podemos crear y migrar las tablas
+5) Ahora ya podemos crear las tablas. Las migraciones ya vienen en el repo, no hace falta correr makemigrations
 
     ```bash
-    python manage.py makemigrations adopciones
     python manage.py migrate
     ```
 
-    y cargamos los tipos de usuario (adoptante, rescatista y moderador) con
+    Esto tambien crea los 3 usuarios genericos (adoptante1, rescatista1 y mod1).
+
+    Despues cargamos los tipos de usuario (adoptante, rescatista y moderador) con
 
     ```bash
     python manage.py loaddata datos_iniciales
     ```
 
-6) creamos el super usuario con
+6) (Opcional, solo para entrar al admin de Django en http://localhost:8000/admin) creamos el super usuario con
     ```bash
     python manage.py createsuperuser
     ```
@@ -194,8 +204,11 @@ Si es la primera vez que se levanta el frontend ejecutar todos los pasos si no e
 3) ejecutar el siguiente comando para levantar el frontend
 
     ```bash
-    ng serve
+    npm start
     ```
+    (equivale a `ng serve`, pero no necesita tener Angular CLI instalado globalmente)
+
+    El backend tiene que estar corriendo en el puerto 8000: el front le manda los pedidos a `/api` a traves del proxy (`src/proxy.conf.json`).
     ya tenemos el proyecto levantado en
     http://localhost:4200/
 
