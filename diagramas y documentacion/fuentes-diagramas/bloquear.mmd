@@ -1,0 +1,13 @@
+---
+title: "Diagrama de Estados - Bloqueo de usuario"
+---
+stateDiagram-v2
+    [*] --> ACTIVO : un usuario bloquea a otro
+    ACTIVO --> ANULADO : el bloqueador desbloquea
+    ANULADO --> ACTIVO : el bloqueador vuelve a bloquear<br/>(reutiliza el mismo registro)
+    ANULADO --> [*]
+    note right of ACTIVO
+        Mientras está ACTIVO no se pueden
+        enviar mensajes entre ambos y sus
+        publicaciones no aparecen en el catálogo.
+    end note

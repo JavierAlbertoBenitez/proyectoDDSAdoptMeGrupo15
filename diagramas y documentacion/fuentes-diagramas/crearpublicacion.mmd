@@ -1,0 +1,18 @@
+---
+title: "Diagrama de Estados - Publicación de animal"
+---
+stateDiagram-v2
+    [*] --> EN_ADOPCION : el rescatista crea la publicación
+    EN_ADOPCION --> EN_PROCESO : pone en proceso<br/>[tiene al menos una solicitud aceptada]
+    EN_PROCESO --> EN_ADOPCION : la adopción no se concretó
+    EN_PROCESO --> ADOPTADO : adopción concretada<br/>/ rechaza las solicitudes pendientes
+    EN_ADOPCION --> [*] : el rescatista o un moderador elimina la publicación
+    EN_PROCESO --> [*] : el rescatista o un moderador elimina la publicación
+    ADOPTADO --> [*] : cierre del ciclo
+    note right of ADOPTADO
+        Estado final: la publicación sale del
+        catálogo y ya no se le puede cambiar
+        el estado. En cualquiera de los tres
+        estados el rescatista dueño o un
+        moderador pueden eliminarla.
+    end note

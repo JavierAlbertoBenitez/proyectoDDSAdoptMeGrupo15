@@ -1,0 +1,16 @@
+---
+title: "Diagrama de Estados - Solicitud de adopción"
+---
+stateDiagram-v2
+    [*] --> PENDIENTE : el adoptante envía la solicitud
+    PENDIENTE --> ACEPTADA : el rescatista acepta<br/>/ se crea el chat
+    PENDIENTE --> RECHAZADA : el rescatista rechaza<br/>/ registra motivo_rechazo
+    PENDIENTE --> RECHAZADA : la publicación pasa a ADOPTADO<br/>/ rechazo automático
+    PENDIENTE --> [*] : la elimina el adoptante que la envió<br/>o un moderador / se borra el registro
+    ACEPTADA --> [*]
+    RECHAZADA --> [*]
+    note right of PENDIENTE
+        La eliminación existe en la API
+        (DELETE /api/solicitudes/&lt;id&gt;/)
+        pero todavía no tiene botón en la interfaz.
+    end note

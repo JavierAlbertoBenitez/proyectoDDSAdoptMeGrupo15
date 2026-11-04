@@ -1,0 +1,126 @@
+---
+title: "Diagrama de Dominio - AdoptMe - DDS 2026 Grupo 15"
+---
+classDiagram
+    class Ubicacion {
+        -id: int
+        +provincia: String
+        +departamento: String
+        +ciudad: String
+        -calle: String
+        -numero: String
+        -piso: String
+        -direccionCompleta: String
+        +zonaAproximada: String
+    }
+    class Usuario {
+        -id: int
+        +email: String
+        -passwordEncriptada: String
+        -telefono: String
+        +nombreCompleto: String
+        +descripcion: String
+        +direccionPublica: Boolean
+        +estado: String
+        -suspendidoHasta: Date
+        -strikesReporte: int
+        -reportesBloqueadosHasta: Date
+        +estaSuspendido() Boolean
+        +puedeReportar() Boolean
+    }
+    class Rescatista
+    class Adoptante
+    class Moderador {
+        +revisarReporte(reporte)
+        +ignorarReporte(reporte)
+        +advertirUsuario(reporte, mensaje)
+        +suspenderUsuario(reporte, dias)
+        +darStrike(reporte, dias)
+        +darDeBajaUsuario(usuario)
+    }
+    class Animal {
+        +id: int
+        +nombre: String
+        +especie: String
+        +raza: String
+        +edad: String
+        +sexo: String
+        +peso: Decimal
+        +vacunasAdministradas: String
+        +castrado: Boolean
+        +compatibleNinos: Boolean
+        +compatibleOtrosAnimales: Boolean
+        +desparasitado: Boolean
+        +tieneMicrochip: Boolean
+        +entrenamientoBasico: Boolean
+        +fotos: List~String~
+    }
+    class Publicacion {
+        +id: int
+        +descripcion: String
+        +provincia: String
+        +departamento: String
+        +localidad: String
+        +fechaPublicacion: Date
+        +estado: String
+    }
+    class SolicitudAdopcion {
+        +id: int
+        +fecha: Date
+        +estado: String
+        +motivoRechazo: String
+    }
+    class Chat {
+        +id: int
+        +fechaCreacion: Date
+    }
+    class Mensaje {
+        +id: int
+        +contenido: String
+        +fechaEnvio: Date
+    }
+    class Reporte {
+        +id: int
+        +categoria: String
+        +motivo: String
+        +evidencia: JSON
+        +publicacionReportada: JSON
+        +fechaReporte: Date
+        +estado: String
+        +resolucion: String
+        -notaModerador: String
+        +fechaResolucion: Date
+    }
+    class Alerta {
+        +id: int
+        +tipo: String
+        +mensaje: String
+        +fechaAlerta: Date
+        +leida: Boolean
+    }
+    class Bloqueo {
+        +id: int
+        +fechaBloqueo: Date
+        +estado: String
+    }
+
+    Usuario <|-- Rescatista
+    Usuario <|-- Adoptante
+    Usuario <|-- Moderador
+
+    Usuario "0..*" --> "1" Ubicacion : vive en
+    Usuario "1" --> "0..*" Bloqueo : realiza
+    Usuario "1" --> "0..*" Reporte : realiza
+    Usuario "1" --> "0..*" Alerta : recibe
+    Moderador "1" --> "0..*" Reporte : resuelve
+    Reporte "1" --> "0..*" Alerta : origina
+    Reporte "0..*" --> "0..1" Publicacion : puede referirse a
+
+    Rescatista "1" --> "0..*" Animal : carga
+    Rescatista "1" --> "0..*" Publicacion : publica
+    Publicacion "1" --> "1" Animal : difunde
+    Adoptante "1" --> "0..*" SolicitudAdopcion : envia
+    Publicacion "1" --> "0..*" SolicitudAdopcion : recibe
+    SolicitudAdopcion "1" --> "0..1" Chat : genera
+    Chat "1" --> "0..*" Mensaje : contiene
+    Usuario "1" --> "0..*" Mensaje : emite

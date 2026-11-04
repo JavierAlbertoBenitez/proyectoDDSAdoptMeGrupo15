@@ -1,0 +1,126 @@
+@startuml
+title Diagrama de Casos de Uso - AdoptMe - DDS 2026 Grupo 15
+
+left to right direction
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam titleFontSize 17
+skinparam ArrowColor #444444
+skinparam nodesep 18
+skinparam ranksep 70
+skinparam actor {
+  BackgroundColor #ECECFF
+  BorderColor #6C4FD6
+  FontSize 14
+  FontStyle bold
+}
+skinparam usecase {
+  BackgroundColor #ECECFF
+  BorderColor #9370DB
+  FontColor #1A1A2E
+}
+skinparam rectangle {
+  BackgroundColor #FCFCFF
+  BorderColor #6C4FD6
+  FontSize 15
+  FontStyle bold
+}
+skinparam package {
+  BackgroundColor #F4F2FD
+  BorderColor #A79BE0
+  FontSize 13
+  FontStyle bold
+  FontColor #4A3B8C
+}
+
+actor "Usuario\nregistrado" as U
+actor "Rescatista"  as R
+actor "Adoptante"   as A
+actor "Moderador"   as M
+
+U <|-- R
+U <|-- A
+
+rectangle "Sistema de Adopción de Animales" {
+
+  package "Cuenta y perfil" {
+    usecase "CU09\nCrear perfil de usuario" as CU09
+    usecase "CU16\nSeleccionar ubicación"   as CU16
+    usecase "CU15\nVer alertas recibidas"   as CU15
+    usecase "CU17\nVer perfil público"      as CU17
+    usecase "CU18\nIniciar sesión"          as CU18
+    usecase "CU19\nCambiar contraseña"      as CU19
+    usecase "CU20\nEditar perfil"           as CU20
+    usecase "CU23\nCerrar sesión"           as CU23
+  }
+
+  package "Comunicación y seguridad" {
+    usecase "CU03\nIntercambiar mensajes"         as CU03
+    usecase "CU07\nBloquear perfil"               as CU07
+    usecase "CU08\nReportar perfil o publicación" as CU08
+  }
+
+  package "Publicaciones (Rescatista)" {
+    usecase "CU01\nPublicar animal en adopción"        as CU01
+    usecase "CU04\nGestionar estado de la publicación" as CU04
+    usecase "CU06\nGestionar solicitudes"              as CU06
+    usecase "CU21\nEliminar publicación"               as CU21
+  }
+
+  package "Búsqueda y adopción (Adoptante)" {
+    usecase "CU02\nBuscar animales"           as CU02
+    usecase "CU05\nSolicitar adopción"        as CU05
+    usecase "CU10\nVer solicitudes enviadas"  as CU10
+  }
+
+  package "Moderación" {
+    usecase "CU11\nGestionar reporte"            as CU11
+    usecase "CU12\nDar de baja un usuario"       as CU12
+    usecase "CU13\nSancionar usuario reportado"  as CU13
+    usecase "CU14\nDar strike a un reportador"   as CU14
+    usecase "CU22\nLevantar una sanción"         as CU22
+  }
+}
+
+' --- Lo que puede hacer cualquier usuario registrado ---
+U -- CU09
+U -- CU15
+U -- CU03
+U -- CU07
+U -- CU08
+U -- CU17
+U -- CU18
+U -- CU19
+U -- CU20
+U -- CU23
+
+' --- Propio del Rescatista ---
+R -- CU01
+R -- CU04
+R -- CU06
+R -- CU21
+
+' --- Propio del Adoptante ---
+A -- CU02
+A -- CU05
+A -- CU10
+
+' --- Propio del Moderador ---
+M -- CU18
+M -- CU19
+M -- CU23
+M -- CU11
+M -- CU12
+M -- CU13
+M -- CU14
+M -- CU22
+M -- CU21
+
+' --- Relaciones entre casos de uso ---
+CU09 ..> CU16 : <<include>>
+CU13 ..> CU11 : <<extend>>
+CU14 ..> CU11 : <<extend>>
+
+@enduml

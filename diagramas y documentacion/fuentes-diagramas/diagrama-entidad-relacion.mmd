@@ -1,0 +1,163 @@
+---
+title: "Diagrama Entidad-Relación - AdoptMe - DDS 2026 Grupo 15"
+---
+erDiagram
+    PROVINCIAS {
+        VARCHAR id_provincia PK "código oficial Georef"
+        VARCHAR nombre UK
+    }
+    DEPARTAMENTOS {
+        VARCHAR id_departamento PK
+        VARCHAR id_provincia FK
+        VARCHAR nombre
+    }
+    LOCALIDADES {
+        VARCHAR id_localidad PK
+        VARCHAR id_departamento FK
+        VARCHAR nombre
+    }
+    TIPOS_USUARIO {
+        INT id_tipo_usuario PK
+        VARCHAR nombre UK "Adoptante / Rescatista / Moderador"
+    }
+    UBICACIONES {
+        INT id_ubicacion PK
+        VARCHAR provincia
+        VARCHAR departamento "NULL"
+        VARCHAR ciudad "nombre de la localidad"
+        VARCHAR calle "NULL - dato privado"
+        VARCHAR numero "NULL - dato privado"
+        VARCHAR piso "NULL - dato privado"
+        VARCHAR direccion_completa "se arma con calle+numero+piso"
+        VARCHAR zona_aproximada "NULL - lo unico publico"
+    }
+    USUARIOS {
+        INT id_usuario PK
+        INT id_ubicacion FK
+        INT id_tipo_usuario FK
+        VARCHAR email UK
+        VARCHAR password_encriptada
+        VARCHAR telefono "NULL"
+        VARCHAR nombre_completo
+        TEXT descripcion "NULL"
+        BOOLEAN direccion_publica
+        VARCHAR estado "ACTIVO / BAJA"
+        DATETIME suspendido_hasta "NULL"
+        SMALLINT strikes_reporte
+        DATETIME reportes_bloqueados_hasta "NULL"
+    }
+    ANIMALES {
+        INT id_animal PK
+        INT id_rescatista FK "NULL"
+        VARCHAR nombre
+        VARCHAR especie
+        VARCHAR raza "NULL"
+        VARCHAR edad
+        VARCHAR sexo "NULL"
+        DECIMAL peso "NULL"
+        VARCHAR vacunas_administradas "NULL"
+        BOOLEAN castrado
+        BOOLEAN compatible_ninos
+        BOOLEAN compatible_otros_animales
+        BOOLEAN desparasitado
+        BOOLEAN tiene_microchip
+        BOOLEAN entrenamiento_basico
+    }
+    FOTOS_ANIMAL {
+        INT id_foto PK
+        INT id_animal FK
+        VARCHAR url_foto
+    }
+    PUBLICACIONES {
+        INT id_publicacion PK
+        INT id_rescatista FK
+        INT id_animal FK "UNIQUE - relacion 1 a 1"
+        TEXT descripcion "NULL"
+        VARCHAR provincia "NULL - copiada del rescatista"
+        VARCHAR departamento "NULL - copiada del rescatista"
+        VARCHAR localidad "NULL - copiada del rescatista"
+        DATETIME fecha_publicacion
+        VARCHAR estado "EN_ADOPCION / EN_PROCESO / ADOPTADO"
+    }
+    SOLICITUDES_ADOPCION {
+        INT id_solicitud PK
+        INT id_adoptante FK "UNIQUE junto a id_publicacion"
+        INT id_publicacion FK
+        DATETIME fecha_solicitud
+        VARCHAR estado "PENDIENTE / ACEPTADA / RECHAZADA"
+        TEXT motivo_rechazo "NULL"
+    }
+    CHATS {
+        INT id_chat PK
+        INT id_solicitud FK "UNIQUE - relacion 1 a 1"
+        DATETIME fecha_creacion
+    }
+    MENSAJES {
+        INT id_mensaje PK
+        INT id_chat FK
+        INT id_emisor FK
+        TEXT contenido
+        DATETIME fecha_envio
+    }
+    REPORTES {
+        INT id_reporte PK
+        INT id_usuario_reportador FK
+        INT id_usuario_reportado FK
+        INT id_moderador FK "NULL"
+        INT id_publicacion FK "NULL - si se reporta una publicacion"
+        VARCHAR categoria "INSULTOS / ACOSO / ESTAFA / SPAM / ..."
+        TEXT motivo
+        JSON evidencia "NULL - copia de los mensajes"
+        JSON publicacion_reportada "NULL - copia de la publicacion"
+        DATETIME fecha_reporte
+        VARCHAR estado "PENDIENTE / EN_REVISION / ACEPTADO / RECHAZADO"
+        VARCHAR resolucion "NULL - IGNORADO/ADVERTENCIA/SUSPENSION/STRIKE"
+        TEXT nota_moderador "NULL"
+        DATETIME fecha_resolucion "NULL"
+    }
+    ALERTAS {
+        INT id_alerta PK
+        INT id_usuario FK
+        INT id_reporte FK "NULL"
+        VARCHAR tipo "ADVERTENCIA / SUSPENSION / STRIKE"
+        TEXT mensaje
+        DATETIME fecha_alerta
+        BOOLEAN leida
+    }
+    BLOQUEOS {
+        INT id_bloqueo PK
+        INT id_usuario_bloqueador FK "UNIQUE junto a id_usuario_bloqueado"
+        INT id_usuario_bloqueado FK
+        DATETIME fecha_bloqueo
+        VARCHAR estado "ACTIVO / ANULADO"
+    }
+
+    PROVINCIAS    ||--o{ DEPARTAMENTOS : "se divide en"
+    DEPARTAMENTOS ||--o{ LOCALIDADES : "contiene"
+    LOCALIDADES   ||..o{ UBICACIONES : "valida por nombre (sin FK)"
+
+    TIPOS_USUARIO ||--o{ USUARIOS : "clasifica"
+    UBICACIONES   ||--o{ USUARIOS : "ubica a"
+
+    USUARIOS ||--o{ ANIMALES : "rescatista carga"
+    ANIMALES ||--o{ FOTOS_ANIMAL : "tiene"
+    ANIMALES ||--o| PUBLICACIONES : "se publica en"
+    USUARIOS ||--o{ PUBLICACIONES : "rescatista publica"
+
+    USUARIOS      ||--o{ SOLICITUDES_ADOPCION : "adoptante envia"
+    PUBLICACIONES ||--o{ SOLICITUDES_ADOPCION : "recibe"
+
+    SOLICITUDES_ADOPCION ||--o| CHATS : "al aceptarse genera"
+    CHATS    ||--o{ MENSAJES : "contiene"
+    USUARIOS ||--o{ MENSAJES : "emisor envia"
+
+    USUARIOS      ||--o{ REPORTES : "reportador hace"
+    USUARIOS      ||--o{ REPORTES : "reportado recibe"
+    USUARIOS      ||--o{ REPORTES : "moderador resuelve"
+    PUBLICACIONES ||--o{ REPORTES : "puede ser reportada en"
+
+    USUARIOS ||--o{ ALERTAS : "recibe"
+    REPORTES ||--o{ ALERTAS : "origina"
+
+    USUARIOS ||--o{ BLOQUEOS : "bloqueador hace"
+    USUARIOS ||--o{ BLOQUEOS : "bloqueado recibe"

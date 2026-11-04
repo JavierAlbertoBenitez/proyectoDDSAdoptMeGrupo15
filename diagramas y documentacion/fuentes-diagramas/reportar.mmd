@@ -1,0 +1,21 @@
+---
+title: "Diagrama de Estados - Reporte a usuario"
+---
+stateDiagram-v2
+    [*] --> PENDIENTE : un usuario crea el reporte<br/>[puede_reportar = true]
+    PENDIENTE --> EN_REVISION : un moderador lo toma (revisar)
+    PENDIENTE --> ACEPTADO : advertir / suspender
+    PENDIENTE --> RECHAZADO : ignorar / strike
+    EN_REVISION --> ACEPTADO : advertir / suspender
+    EN_REVISION --> RECHAZADO : ignorar / strike
+    ACEPTADO --> [*]
+    RECHAZADO --> [*]
+    note right of ACEPTADO
+        resolucion = ADVERTENCIA o SUSPENSION
+        Se genera una Alerta para el reportado.
+    end note
+    note right of RECHAZADO
+        resolucion = IGNORADO o STRIKE
+        STRIKE suma un strike al reportador;
+        con 3 strikes se le bloquean los reportes.
+    end note

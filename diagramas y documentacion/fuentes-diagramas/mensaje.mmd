@@ -1,0 +1,20 @@
+---
+title: "Diagrama de Estados - Enviar mensaje"
+---
+stateDiagram-v2
+    [*] --> EN_VALIDACION : el emisor escribe y presiona Enviar
+    EN_VALIDACION --> NO_ENVIADO : [la solicitud no está aceptada]<br/>o [el emisor no participa del chat]<br/>o [hay un bloqueo activo] / HTTP 403
+    EN_VALIDACION --> ENVIADO : [validaciones OK]<br/>/ se guarda con fecha_envio
+    ENVIADO --> ELIMINADO : lo borra su emisor o un moderador
+    NO_ENVIADO --> [*]
+    ENVIADO --> [*]
+    ELIMINADO --> [*]
+    note right of EN_VALIDACION
+        El chat solo existe si la solicitud
+        fue aceptada por el rescatista.
+    end note
+    note right of ENVIADO
+        Queda visible para los dos participantes.
+        La tabla mensajes no guarda un estado:
+        estos son los pasos de la operación de envío.
+    end note

@@ -1,0 +1,59 @@
+@startuml
+title Diagrama de Despliegue - AdoptMe - DDS 2026 Grupo 15
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam titleFontSize 17
+skinparam ArrowColor #444444
+skinparam ArrowFontSize 11
+skinparam node {
+  BackgroundColor #F4F2FD
+  BorderColor #6C4FD6
+  FontStyle bold
+}
+skinparam artifact {
+  BackgroundColor #ECECFF
+  BorderColor #9370DB
+  FontStyle plain
+}
+skinparam database {
+  BackgroundColor #ECECFF
+  BorderColor #9370DB
+}
+skinparam folder {
+  BackgroundColor #FFF8DC
+  BorderColor #C9A227
+  FontStyle plain
+}
+
+node "Dispositivo del usuario\n(PC o móvil)" as cliente {
+  artifact "Navegador web" as nav
+}
+
+node "Host con Docker Engine\n(docker compose up --build)" as host {
+
+  node "Contenedor: frontend\nimagen node:24-slim" as cfront {
+    artifact "Angular\nng serve --host 0.0.0.0\npuerto 4200\nproxy de /api y /media" as ng
+  }
+
+  node "Contenedor: backend\nimagen python:3.12-slim" as cback {
+    artifact "Django + Django REST Framework\nrunserver 0.0.0.0:8000\npuerto 8000" as dj
+  }
+
+  node "Contenedor: db\nimagen mysql:8.4" as cdb {
+    database "adopcionesdb" as bd
+  }
+
+  folder "Volumen db_data" as vol
+  folder "Bind mount\n./backend/media/fotos_animales" as media
+}
+
+nav   --> ng    : HTTP\nhttp://localhost:4200
+ng    --> dj    : HTTP / JSON\nAuthorization: Bearer <token>\nred interna de Docker (backend:8000)
+dj    --> bd    : SQL vía ORM\n(puerto 3306, espera el healthcheck)
+bd    ..> vol   : persiste /var/lib/mysql
+dj    ..> media : guarda y sirve\nlas fotos de los animales
+
+@enduml
