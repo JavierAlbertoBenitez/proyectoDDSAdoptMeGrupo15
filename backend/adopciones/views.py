@@ -10,6 +10,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from django.conf import settings
+from django.core import signing
 from django.core.files.storage import default_storage
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -56,6 +57,7 @@ from .serializers import (
     CambiarPasswordSerializer,
 )
 from .autenticacion import generar_token, mensaje_suspension
+from .verificacion import enviar_mail_verificacion, leer_token_verificacion
 
 
 # ===========================================================================
@@ -346,8 +348,11 @@ class UsuariosView(APIView):
                             status=status.HTTP_409_CONFLICT)
         serializer = UsuariosSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'status': 'success', 'data': serializer.data},
+            usuario = serializer.save()
+            # Hasta que abra el link del mail no puede iniciar sesion (RF02).
+            # Al moderador no le mandamos nada: no necesita verificar.
+            mail_enviado = es_moderador(usuario) or enviar_mail_verificacion(usuario)
+            return Response({'status': 'success', 'data': serializer.data, 'mail_enviado': mail_enviado},
                             status=status.HTTP_201_CREATED)
         return Response({'status': 'error', 'data': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -403,6 +408,14 @@ class LoginView(APIView):
             return Response({'status': 'error', 'data': 'Contraseña incorrecta'},
                             status=status.HTTP_401_UNAUTHORIZED)
 
+        # "codigo" es para que el front sepa que tiene que ofrecer reenviar el mail.
+        # Al moderador no se le pide: no se registra, lo crea alguien con acceso al servidor.
+        if not usuario.email_verificado and not es_moderador(usuario):
+            return Response({'status': 'error', 'codigo': 'EMAIL_NO_VERIFICADO',
+                             'data': 'Tenés que verificar tu email antes de iniciar sesión. '
+                                     'Revisá tu casilla de correo.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
         if usuario.estado == Usuarios.BAJA:
             return Response({'status': 'error', 'data': 'El usuario está dado de baja'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -413,6 +426,52 @@ class LoginView(APIView):
         return Response({'status': 'success', 'data': UsuariosSerializer(usuario).data,
                          'token': generar_token(usuario)},
                         status=200)
+
+
+class VerificarEmailView(APIView):
+    """POST /api/verificar-email/   Body: { "token": "..." }
+    Lo llama la pantalla /verificar-email de Angular con el token del link del mail.
+    """
+
+    def post(self, request):
+        try:
+            datos = leer_token_verificacion(str(request.data.get('token') or ''))
+        except signing.SignatureExpired:
+            return Response({'status': 'error', 'codigo': 'TOKEN_VENCIDO',
+                             'data': 'El link venció. Pedí uno nuevo desde el inicio de sesión.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except signing.BadSignature:
+            return Response({'status': 'error', 'data': 'El link no es válido.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Si el usuario cambio el email despues de recibir el link, el link ya no sirve.
+        usuario = Usuarios.objects.filter(id_usuario=datos.get('id_usuario'),
+                                          email__iexact=datos.get('email')).first()
+        if usuario is None:
+            return Response({'status': 'error', 'data': 'El link no es válido.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if usuario.email_verificado:
+            return Response({'status': 'success', 'data': 'Tu email ya estaba verificado. Ya podés iniciar sesión.'})
+        usuario.email_verificado = True
+        usuario.save(update_fields=['email_verificado'])
+        return Response({'status': 'success', 'data': '¡Email verificado! Ya podés iniciar sesión.'})
+
+
+class ReenviarVerificacionView(APIView):
+    """POST /api/reenviar-verificacion/   Body: { "email": "..." }
+    Responde lo mismo exista o no la cuenta, para que no sirva para averiguar
+    que mails estan registrados.
+    """
+
+    def post(self, request):
+        email = str(request.data.get('email') or '').strip()
+        usuario = Usuarios.objects.filter(email__iexact=email).first() if email else None
+        if usuario is not None and not usuario.email_verificado:
+            if not enviar_mail_verificacion(usuario):
+                return Response({'status': 'error', 'data': 'No se pudo enviar el mail. Probá de nuevo en un rato.'},
+                                status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response({'status': 'success',
+                         'data': 'Si la cuenta existe y no está verificada, te enviamos un nuevo mail.'})
 
 
 class CambiarPasswordView(APIView):
@@ -831,7 +890,22 @@ class PublicacionesView(APIView):
             return Response({'status': 'error', 'data': 'Solo el rescatista propietario puede eliminar esta publicación'},
                             status=status.HTTP_403_FORBIDDEN)
 
+        # Si la borra un moderador le avisamos al rescatista con una alerta.
+        # Se arma antes de borrar porque despues ya no tenemos el nombre del animal.
+        alerta = None
+        if resultado.rescatista_id != request.user.id_usuario:
+            texto = ('Un moderador eliminó tu publicación de ' + resultado.animal.nombre
+                     + ' por incumplir las normas de la plataforma.')
+            # El reporte por el que se borro (si el front lo manda y es de esta publicacion).
+            reporte = Reportes.objects.filter(
+                id_reporte=request.query_params.get('id_reporte') or 0, publicacion=resultado
+            ).first()
+            alerta = Alertas(usuario_id=resultado.rescatista_id, reporte=reporte,
+                             tipo=Alertas.PUBLICACION_BORRADA, mensaje=texto)
+
         resultado.delete()
+        if alerta is not None:
+            alerta.save()
         return Response({'status': 'success', 'data': 'Publicación eliminada'})
 
 

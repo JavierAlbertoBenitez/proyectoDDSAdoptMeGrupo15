@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth';
@@ -6,7 +6,10 @@ import { NavigationEnd, Router } from '@angular/router';
 import { SolicitudService } from './services/solicitud';
 import { Alerta, AlertaService } from './services/alerta';
 import { UsuarioService } from './services/usuario';
-import { filter } from 'rxjs';
+import { filter, interval } from 'rxjs';
+
+// Cada cuanto se buscan alertas nuevas, para que el aviso llegue aunque el usuario no cambie de pagina.
+const INTERVALO_ALERTAS_MS = 15000;
 
 @Component({
   selector: 'app-root',
@@ -25,7 +28,8 @@ export class App implements OnInit {
     private router: Router,
     private solicitudes: SolicitudService,
     private alertaService: AlertaService,
-    private usuarios: UsuarioService
+    private usuarios: UsuarioService,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +41,7 @@ export class App implements OnInit {
       this.cargarSolicitudesPendientes();
       this.cargarAlertas();
     });
+    interval(INTERVALO_ALERTAS_MS).subscribe(() => this.cargarAlertas());
     this.solicitudes.actualizaciones$.subscribe(() => this.cargarSolicitudesPendientes());
   }
 
@@ -67,6 +72,7 @@ export class App implements OnInit {
     switch (this.alertaActual?.tipo) {
       case 'SUSPENSION': return 'Tu cuenta fue suspendida';
       case 'STRIKE': return 'Recibiste un strike';
+      case 'PUBLICACION_BORRADA': return 'Se eliminó una de tus publicaciones';
       default: return 'Advertencia de un moderador';
     }
   }
@@ -80,6 +86,8 @@ export class App implements OnInit {
     this.alertaService.getNoLeidas().subscribe({
       next: response => {
         this.alertas = Array.isArray(response?.data) ? response.data : [];
+        // Sin esto el modal no se dibuja hasta el proximo click del usuario.
+        this.changeDetector.detectChanges();
         // Un strike puede bloquearle los reportes: refrescamos sus datos guardados.
         if (this.alertas.some(alerta => alerta.tipo === 'STRIKE')) {
           this.usuarios.get(usuario.id_usuario).subscribe({

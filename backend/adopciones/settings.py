@@ -105,6 +105,19 @@ TIME_ZONE = 'America/Argentina/Buenos_Aires'
 USE_I18N = True
 USE_TZ = True
 
+# Envio de mails (verificacion de email, ver adopciones/verificacion.py).
+# En local los atrapa Mailpit: no llegan a nadie real y se ven en http://localhost:8025
+# Con Docker EMAIL_HOST viene de docker-compose.yml (el servicio "mailpit").
+# Sin Mailpit se puede usar EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+# y el mail se imprime en la consola del backend.
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '1025'))
+EMAIL_TIMEOUT = 10
+DEFAULT_FROM_EMAIL = 'AdoptMe <no-responder@adoptme.local>'
+# A donde apunta el link del mail (la pantalla de Angular que verifica el token).
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:4200')
+
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

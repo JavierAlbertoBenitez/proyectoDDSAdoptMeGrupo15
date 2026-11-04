@@ -54,6 +54,8 @@ class Command(BaseCommand):
                 password_encriptada=make_password(password),
                 tipo_usuario=tipo,
                 ubicacion=ubicacion,
+                # Lo crea alguien con acceso al servidor: no hace falta verificar el mail.
+                email_verificado=True,
             )
 
         self.stdout.write(self.style.SUCCESS(

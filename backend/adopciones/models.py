@@ -173,6 +173,9 @@ class Usuarios(models.Model):
     # el usuario la cambia desde Mi Perfil.
     direccion_publica = models.BooleanField(default=False)
     estado = models.CharField(max_length=20, choices=ESTADOS, default=ACTIVO)
+    # Se pone en True cuando el usuario abre el link del mail de verificacion
+    # (RF02). Hasta entonces no puede iniciar sesion. Ver verificacion.py.
+    email_verificado = models.BooleanField(default=False)
     # Suspension temporal que pone un moderador al aceptar un reporte.
     # Mientras la fecha no pase, el usuario no puede iniciar sesion ni usar la API.
     suspendido_hasta = models.DateTimeField(blank=True, null=True)
@@ -572,16 +575,19 @@ class Reportes(models.Model):
 # ---------------------------------------------------------------------------
 # tabla alertas
 # Avisos que un moderador le manda a un usuario: advertencias de comportamiento,
-# suspensiones y strikes. El usuario las ve al entrar y las marca como leidas.
+# suspensiones, strikes y publicaciones que le borro un moderador. El usuario
+# las ve al entrar y las marca como leidas.
 # ---------------------------------------------------------------------------
 class Alertas(models.Model):
     ADVERTENCIA = 'ADVERTENCIA'
     SUSPENSION = 'SUSPENSION'
     STRIKE = 'STRIKE'
+    PUBLICACION_BORRADA = 'PUBLICACION_BORRADA'
     TIPOS = [
         (ADVERTENCIA, 'Advertencia de comportamiento'),
         (SUSPENSION, 'Suspensión'),
         (STRIKE, 'Strike por reporte sin motivo'),
+        (PUBLICACION_BORRADA, 'Publicación eliminada por un moderador'),
     ]
 
     id_alerta = models.AutoField(primary_key=True)

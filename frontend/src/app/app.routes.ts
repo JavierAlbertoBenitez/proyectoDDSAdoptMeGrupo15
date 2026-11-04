@@ -4,6 +4,7 @@ import { PublicacionDetail } from './components/publicacion-detail/publicacion-d
 import { PublicacionAdd } from './components/publicacion-add/publicacion-add';
 import { Login } from './components/login/login';
 import { Registro } from './components/registro/registro';
+import { VerificarEmail } from './components/verificar-email/verificar-email';
 import { SolicitudList } from './components/solicitud-list/solicitud-list';
 import { ChatList } from './components/chat-list/chat-list';
 import { ChatDetail } from './components/chat-detail/chat-detail';
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'publicaciones', pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'registro', component: Registro },
+  { path: 'verificar-email', component: VerificarEmail },
   { path: 'publicaciones', component: PublicacionList, canActivate: [authenticatedOnlyGuard] },
   { path: 'publicaciones/:id', component: PublicacionDetail, canActivate: [authenticatedOnlyGuard] },
   { path: 'publicar', component: PublicacionAdd, canActivate: [authenticatedOnlyGuard, rescuerOnlyGuard] },

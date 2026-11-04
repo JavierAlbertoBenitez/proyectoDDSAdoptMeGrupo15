@@ -54,6 +54,8 @@ rectangle "Sistema de Adopción de Animales" {
     usecase "CU19\nCambiar contraseña"      as CU19
     usecase "CU20\nEditar perfil"           as CU20
     usecase "CU23\nCerrar sesión"           as CU23
+    usecase "CU24\nVerificar email"         as CU24
+    usecase "CU25\nReenviar mail\nde verificación"  as CU25
   }
 
   package "Comunicación y seguridad" {
@@ -95,6 +97,8 @@ U -- CU18
 U -- CU19
 U -- CU20
 U -- CU23
+U -- CU24
+U -- CU25
 
 ' --- Propio del Rescatista ---
 R -- CU01
@@ -120,6 +124,7 @@ M -- CU21
 
 ' --- Relaciones entre casos de uso ---
 CU09 ..> CU16 : <<include>>
+CU25 ..> CU24 : <<extend>>
 CU13 ..> CU11 : <<extend>>
 CU14 ..> CU11 : <<extend>>
 

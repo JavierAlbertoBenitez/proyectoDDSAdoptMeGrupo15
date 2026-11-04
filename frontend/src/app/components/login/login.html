@@ -5,8 +5,16 @@
     <h1>Iniciar sesión</h1>
     <p class="auth-description">Ingresá a tu cuenta para continuar con las adopciones.</p>
 
+    @if (aviso) {
+      <div class="auth-info" role="status">{{ aviso }}</div>
+    }
     @if (error) {
       <div class="auth-error" role="alert">{{ error }}</div>
+    }
+    @if (emailSinVerificar) {
+      <button type="button" class="auth-reenviar" [disabled]="reenviando" (click)="reenviarVerificacion()">
+        {{ reenviando ? 'Enviando...' : 'Reenviar mail de verificación' }}
+      </button>
     }
 
     <label class="auth-field">

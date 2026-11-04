@@ -1,4 +1,27 @@
-frontend/.angular/
+# Dependencias y artefactos de build (se regeneran con npm ci / ng build)
 frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+
+# Python
 __pycache__/
 *.pyc
+
+# Fotos que suben los usuarios al usar el sistema
+backend/media/
+
+# Base de datos local, si se corre sin Docker
+*.sqlite3
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs y variables de entorno
+*.log
+.env
