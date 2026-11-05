@@ -36,6 +36,7 @@
 .accept-button { background: var(--green-dark); color: #fff; }
 .reject-button { background: #fff; color: #a33b3b; outline: 1px solid #e6b5b5; }
 .chat-button { background: #fff2e7; color: #b95714; }
+.cancel-request-button { display: inline-flex; align-items: center; gap: 5px; background: #fff; color: #a33b3b; outline: 1px solid #e6b5b5; }
 .request-actions button:disabled, .dialog-actions button:disabled { cursor: not-allowed; opacity: .55; }
 .requests-state, .requests-empty { padding: 50px 20px; color: var(--text-gray); text-align: center; }
 .error-state { color: #a23d24; }

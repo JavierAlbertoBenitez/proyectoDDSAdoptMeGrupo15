@@ -75,6 +75,7 @@ rectangle "Sistema de Adopción de Animales" {
     usecase "CU02\nBuscar animales"           as CU02
     usecase "CU05\nSolicitar adopción"        as CU05
     usecase "CU10\nVer solicitudes enviadas"  as CU10
+    usecase "CU26\nCancelar solicitud"        as CU26
   }
 
   package "Moderación" {
@@ -110,6 +111,7 @@ R -- CU21
 A -- CU02
 A -- CU05
 A -- CU10
+A -- CU26
 
 ' --- Propio del Moderador ---
 M -- CU18

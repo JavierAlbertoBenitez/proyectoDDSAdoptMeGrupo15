@@ -173,6 +173,43 @@ export class SolicitudList implements OnInit {
     });
   }
 
+  /** El adoptante cancela una solicitud suya que todavía está PENDIENTE (CU26).
+   *  El backend borra el registro (DELETE), no le cambia el estado: por eso la
+   *  sacamos de la lista en vez de marcarla como cancelada. */
+  cancelar(solicitud: any): void {
+    if (this.esRescatista || solicitud.estado !== 'PENDIENTE' || this.procesandoId !== null) {
+      return;
+    }
+    const idAdoptante = this.auth.getUsuarioActual()?.id_usuario;
+    if (!idAdoptante || solicitud.adoptante?.id_usuario !== idAdoptante) {
+      this.toastr.error('Solo podés cancelar tus propias solicitudes.');
+      return;
+    }
+    if (!window.confirm(
+      `¿Querés cancelar tu solicitud por ${this.nombreMascota(solicitud)}? `
+      + 'Se va a borrar y el rescatista ya no la va a ver. '
+      + 'Si cambiás de idea vas a tener que enviarla de nuevo.')) {
+      return;
+    }
+
+    this.procesandoId = solicitud.id_solicitud;
+    this.solicitudesService.delete(solicitud.id_solicitud).subscribe({
+      next: () => {
+        this.solicitudes = this.solicitudes.filter(s => s.id_solicitud !== solicitud.id_solicitud);
+        this.procesandoId = null;
+        this.solicitudesService.notificarActualizacion();
+        this.toastr.success('Tu solicitud fue cancelada.');
+        this.changeDetector.detectChanges();
+      },
+      error: error => {
+        console.error('No se pudo cancelar la solicitud.', error);
+        this.toastr.error(this.errorMessage(error));
+        this.procesandoId = null;
+        this.changeDetector.detectChanges();
+      }
+    });
+  }
+
   abrirChat(solicitud: any): void {
     if (solicitud.id_chat) {
       this.router.navigate(['/chats', solicitud.id_chat]);

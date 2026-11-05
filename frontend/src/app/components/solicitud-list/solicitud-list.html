@@ -89,6 +89,13 @@
                 <button type="button" class="reject-button" [disabled]="procesandoId === solicitud.id_solicitud"
                         (click)="abrirRechazo(solicitud)">Rechazar</button>
               }
+              @if (!esRescatista && solicitud.estado === 'PENDIENTE') {
+                <button type="button" class="cancel-request-button"
+                        [disabled]="procesandoId === solicitud.id_solicitud"
+                        (click)="cancelar(solicitud)">
+                  <i class="bi bi-x-circle"></i> Cancelar solicitud
+                </button>
+              }
               @if (esRescatista && solicitud.estado === 'ACEPTADA') {
                 @if (solicitud.publicacion?.estado === 'EN_ADOPCION') {
                   <button type="button" class="process-button"
